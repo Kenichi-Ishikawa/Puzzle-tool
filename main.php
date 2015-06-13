@@ -48,8 +48,8 @@ $anser[3][0][1][1] = '×';
 
 
 do {
-	$tmp_batu = $batu;
 	$tmp_maru = $maru;
+	$tmp_batu = $batu;
 
 	// ○がついたら縦横に×をつける
 	for($i = 0; $i < BLOCK; $i++) {
@@ -77,21 +77,90 @@ do {
 		}
 	}
 
-	// TODO
 	// 縦横○なら○、それ以外なら×
+	list ($anser, $maru, $batu) = BlockCheck($anser, $maru, $batu);
 
+	// TODO
+	// ○に対応するところが×なら×
 
 	// TODO
 	// ×で埋まっていたら○
 
 
+} while($tmp_maru != $maru || $tmp_batu != $batu);
 
-//} while($tmp_maru != $maru && $tmp_batu != $batu);
-} while($tmp_batu != $batu);
+
+
+/*
+ * 関数
+ */
+
+/*
+ * ブロックチェック
+ * 縦○横○なら○
+ * それ以外なら×
+ */
+function BlockCheck($anser, $maru, $batu) {
+	switch (BLOCK) {
+	case 4:
+		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 1, 0, 0, 3, 0);
+		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 1, 3, 0, 0, 0);
+		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 2, 0, 0, 2, 0);
+		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 2, 2, 0, 0, 0);
+		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 3, 0, 0, 1, 0);
+		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 3, 1, 0, 0, 0);
+		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 1, 2, 2, 1, 1, 1);
+
+		return array ($anser, $maru, $batu);
+		break;
+	default:
+		// 何もしない
+		break;
+	}
+}
+
+function BlockCheckDetail($anser, $maru, $batu, $tate_block_1, $yoko_block_1, $tate_block_2, $yoko_block_2, $tate_block_3, $yoko_block_3) {
+	for($i = 0; $i < ITEM; $i++) {
+		for($j = 0; $j < ITEM; $j++) {
+			if($anser[$tate_block_3][$yoko_block_3][$i][$j] == NULL) {
+				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '×' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '×') {
+					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '×';
+					$batu += 1;
+				}
+				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '○' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '×') {
+					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '×';
+					$batu += 1;
+				}
+				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '×' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '○') {
+					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '×';
+					$batu += 1;
+				}
+				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '○' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '○') {
+					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '○';
+					$maru += 1;
+				}
+			}
+		}
+	}
+	return array ($anser, $maru, $batu);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * 出力
  */
+echo '<br />';
 $tem_block = BLOCK;
 for($l = 0; $l < BLOCK; $l++) {
 	for($k = 0; $k < ITEM; $k++) {
