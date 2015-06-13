@@ -1,8 +1,8 @@
 <?php
 /*
  * 多次元配列にしてみる
- * $anser[縦ブロック][横ブロック][縦アイテム][横アイテム]
- * $anser[$i][$j][$k][$l]
+ * $answer[縦ブロック][横ブロック][縦アイテム][横アイテム]
+ * $answer[$i][$j][$k][$l]
  */
 // TODO
 // この定義もいずれフォームから取ってくる？
@@ -15,36 +15,37 @@ $tmp_batu = 0;
 $maru = 0;
 $batu = 0;
 for($i = 0; $i < BLOCK; $i++) {
-	$anser[$i] = NULL;
+	$answer[$i] = NULL;
 	for($j = 0; $j < BLOCK; $j++) {
-		$anser[$i][$j] = NULL;
+		$answer[$i][$j] = NULL;
 		for($k = 0; $k < ITEM; $k++) {
-			$anser[$i][$j][$k] = NULL;
+			$answer[$i][$j][$k] = NULL;
 			for($l = 0; $l < ITEM; $l++) {
-				$anser[$i][$j][$k][$l] = NULL;
+				$answer[$i][$j][$k][$l] = NULL;
 			}
 		}
 	}
 }
+$loop = 1;
 
 // TODO
 // フォームからデータを持ってくる
 // test
-$anser[0][0][3][2] = '×';
-$anser[0][1][1][1] = '×';
-$anser[0][2][1][1] = '○';
-$anser[0][3][2][2] = '○';
+$answer[0][0][3][2] = '×';
+$answer[0][1][1][1] = '×';
+$answer[0][2][1][1] = '○';
+$answer[0][3][2][2] = '○';
 
-$anser[1][0][3][1] = '○';
-$anser[1][1][0][0] = '×';
-$anser[1][1][2][2] = '○';
-$anser[1][2][2][3] = '×';
+$answer[1][0][3][1] = '○';
+$answer[1][1][0][0] = '×';
+$answer[1][1][2][2] = '○';
+$answer[1][2][2][3] = '×';
 
-$anser[2][0][2][3] = '○';
-$anser[2][1][0][3] = '○';
+$answer[2][0][2][3] = '○';
+$answer[2][1][0][3] = '○';
 
-$anser[3][0][0][0] = '○';
-$anser[3][0][1][1] = '×';
+$answer[3][0][0][0] = '○';
+$answer[3][0][1][1] = '×';
 
 
 do {
@@ -56,18 +57,18 @@ do {
 		for($j = 0; $j < BLOCK; $j++) {
 			for($k = 0; $k < ITEM; $k++) {
 				for($l = 0; $l < ITEM; $l++) {
-					if($anser[$i][$j][$k][$l] == '○') {
+					if($answer[$i][$j][$k][$l] == '○') {
 						// 横に×をつける
 						for($m = 0; $m < ITEM; $m++) {
-							if($anser[$i][$j][$k][$m] == NULL) {
-								$anser[$i][$j][$k][$m] = '×';
+							if($answer[$i][$j][$k][$m] == NULL) {
+								$answer[$i][$j][$k][$m] = '×';
 								$batu += 1;
 							}
 						}
 						// 縦に×をつける
 						for($n = 0; $n < ITEM; $n++) {
-							if($anser[$i][$j][$n][$l] == NULL) {
-								$anser[$i][$j][$n][$l] = '×';
+							if($answer[$i][$j][$n][$l] == NULL) {
+								$answer[$i][$j][$n][$l] = '×';
 								$batu += 1;
 							}
 						}
@@ -78,17 +79,19 @@ do {
 	}
 
 	// 縦横○なら○、それ以外なら×
-	list ($anser, $maru, $batu) = BlockCheck($anser, $maru, $batu);
+	list ($answer, $maru, $batu) = BlockCheck($answer, $maru, $batu);
 
 	// TODO
 	// ○に対応するところが×なら×
 
-	// TODO
 	// ×で埋まっていたら○
+	list ($answer, $maru, $batu) = AllBatuCheck($answer, $maru, $batu);
 
+	echo 'loop='.$loop.'<br />';
+	$loop += 1;
 
 } while($tmp_maru != $maru || $tmp_batu != $batu);
-
+//} while(0);
 
 
 /*
@@ -100,18 +103,19 @@ do {
  * 縦○横○なら○
  * それ以外なら×
  */
-function BlockCheck($anser, $maru, $batu) {
+function BlockCheck($answer, $maru, $batu) {
 	switch (BLOCK) {
 	case 4:
-		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 1, 0, 0, 3, 0);
-		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 1, 3, 0, 0, 0);
-		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 2, 0, 0, 2, 0);
-		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 2, 2, 0, 0, 0);
-		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 3, 0, 0, 1, 0);
-		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 0, 3, 1, 0, 0, 0);
-		list ($anser, $maru, $batu) = BlockCheckDetail($anser, $maru, $batu, 1, 2, 2, 1, 1, 1);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 1, 0, 0, 3, 0);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 1, 3, 0, 0, 0);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 2, 0, 0, 2, 0);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 2, 2, 0, 0, 0);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 3, 0, 0, 1, 0);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 3, 1, 0, 0, 0);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 3, 1, 1, 0, 1);
+		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 1, 2, 2, 1, 1, 1);
 
-		return array ($anser, $maru, $batu);
+		return array ($answer, $maru, $batu);
 		break;
 	default:
 		// 何もしない
@@ -119,36 +123,87 @@ function BlockCheck($anser, $maru, $batu) {
 	}
 }
 
-function BlockCheckDetail($anser, $maru, $batu, $tate_block_1, $yoko_block_1, $tate_block_2, $yoko_block_2, $tate_block_3, $yoko_block_3) {
+function BlockCheckDetail($answer, $maru, $batu, $tate_block_1, $yoko_block_1, $tate_block_2, $yoko_block_2, $tate_block_3, $yoko_block_3) {
 	for($i = 0; $i < ITEM; $i++) {
 		for($j = 0; $j < ITEM; $j++) {
-			if($anser[$tate_block_3][$yoko_block_3][$i][$j] == NULL) {
-				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '×' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '×') {
-					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '×';
+			if($answer[$tate_block_3][$yoko_block_3][$i][$j] == NULL) {
+				if($answer[$tate_block_1][$yoko_block_1][$i][$j] == '×' && $answer[$tate_block_2][$yoko_block_2][$i][$j] == '×') {
+					$answer[$tate_block_3][$yoko_block_3][$i][$j] = '×';
 					$batu += 1;
 				}
-				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '○' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '×') {
-					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '×';
+				if($answer[$tate_block_1][$yoko_block_1][$i][$j] == '○' && $answer[$tate_block_2][$yoko_block_2][$i][$j] == '×') {
+					$answer[$tate_block_3][$yoko_block_3][$i][$j] = '×';
 					$batu += 1;
 				}
-				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '×' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '○') {
-					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '×';
+				if($answer[$tate_block_1][$yoko_block_1][$i][$j] == '×' && $answer[$tate_block_2][$yoko_block_2][$i][$j] == '○') {
+					$answer[$tate_block_3][$yoko_block_3][$i][$j] = '×';
 					$batu += 1;
 				}
-				if($anser[$tate_block_1][$yoko_block_1][$i][$j] == '○' && $anser[$tate_block_2][$yoko_block_2][$i][$j] == '○') {
-					$anser[$tate_block_3][$yoko_block_3][$i][$j] = '○';
+				if($answer[$tate_block_1][$yoko_block_1][$i][$j] == '○' && $answer[$tate_block_2][$yoko_block_2][$i][$j] == '○') {
+					$answer[$tate_block_3][$yoko_block_3][$i][$j] = '○';
 					$maru += 1;
 				}
 			}
 		}
 	}
-	return array ($anser, $maru, $batu);
+	return array ($answer, $maru, $batu);
 }
 
 
+/*
+ * ○×チェック
+ */
+function MaruBatuCheck($answer, $maru, $batu) {
+	// TODO
+	return array ($answer, $maru, $batu);
+}
 
-
-
+/*
+ * ALL×チェック
+ */
+function AllBatuCheck($answer, $maru, $batu) {
+	for($i = 0; $i < BLOCK; $i++) {
+		for($j = 0; $j < BLOCK; $j++) {
+			for($k = 0; $k < ITEM; $k++) {
+				for($l = 0; $l < ITEM; $l++) {
+					if($answer[$i][$j][$k][$l] == NULL) {
+						$tate_count = 0;
+						$yoko_count = 0;
+						// 横に○をつける
+						for($m = 0; $m < ITEM; $m++) {
+							if($answer[$i][$j][$k][$m] != NULL) {
+								$yoko_count += 1;
+								if($yoko_count == ITEM - 1) {
+									for($n = 0; $n < ITEM; $n++) {
+										if($answer[$i][$j][$k][$m] == NULL) {
+											$answer[$i][$j][$k][$m] = '○';
+											$maru += 1;
+										}
+									}
+								}
+							}
+						}
+						// 縦に○をつける
+						for($n = 0; $n < ITEM; $n++) {
+							if($answer[$i][$j][$n][$l] != NULL) {
+								$tate_count += 1;
+								if($tate_count == ITEM - 1) {
+									for($n = 0; $n < ITEM; $n++) {
+										if($answer[$i][$j][$n][$l] == NULL) {
+											$answer[$i][$j][$n][$l] = '○';
+											$maru += 1;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return array ($answer, $maru, $batu);
+}
 
 
 
@@ -160,16 +215,22 @@ function BlockCheckDetail($anser, $maru, $batu, $tate_block_1, $yoko_block_1, $t
 /*
  * 出力
  */
+/*
+echo "<pre>";
+print_r($answer); //今度は<pre>タグで囲ってます。
+echo "</pre>";
+ */
+
 echo '<br />';
 $tem_block = BLOCK;
 for($l = 0; $l < BLOCK; $l++) {
 	for($k = 0; $k < ITEM; $k++) {
 		for($i = 0; $i < $tem_block; $i++) {
 			for($j = 0; $j < ITEM; $j++) {
-				if($anser[$l][$i][$k][$j] == NULL) {
+				if($answer[$l][$i][$k][$j] == NULL) {
 					echo '？';
 				}
-				echo $anser[$l][$i][$k][$j];
+				echo $answer[$l][$i][$k][$j];
 			}
 			echo '■';
 		}
