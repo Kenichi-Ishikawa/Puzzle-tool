@@ -78,20 +78,21 @@ do {
 		}
 	}
 
-	// 縦横○なら○、それ以外なら×
-	list ($answer, $maru, $batu) = BlockCheck($answer, $maru, $batu);
-
 	// TODO
 	// ○に対応するところが×なら×
+	list ($answer, $maru, $batu) = MaruBatuCheck($answer, $maru, $batu);
+
+	// 縦横○なら○、それ以外なら×
+	list ($answer, $maru, $batu) = BlockCheck($answer, $maru, $batu);
 
 	// ×で埋まっていたら○
 	list ($answer, $maru, $batu) = AllBatuCheck($answer, $maru, $batu);
 
-	echo 'loop='.$loop.'<br />';
+	echo $loop.'loop<br />';
 	$loop += 1;
 
 } while($tmp_maru != $maru || $tmp_batu != $batu);
-//} while(0);
+//} while($loop <= 2);
 
 
 /*
@@ -109,9 +110,7 @@ function BlockCheck($answer, $maru, $batu) {
 		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 1, 0, 0, 3, 0);
 		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 1, 3, 0, 0, 0);
 		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 2, 0, 0, 2, 0);
-		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 2, 2, 0, 0, 0);
 		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 3, 0, 0, 1, 0);
-		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 3, 1, 0, 0, 0);
 		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 0, 3, 1, 1, 0, 1);
 		list ($answer, $maru, $batu) = BlockCheckDetail($answer, $maru, $batu, 1, 2, 2, 1, 1, 1);
 
@@ -154,9 +153,61 @@ function BlockCheckDetail($answer, $maru, $batu, $tate_block_1, $yoko_block_1, $
  * ○×チェック
  */
 function MaruBatuCheck($answer, $maru, $batu) {
-	// TODO
+	switch (BLOCK) {
+	case 4:
+		list ($answer, $maru, $batu) = MaruBatuCheckDetail($answer, $maru, $batu, 1, 0, 0, 0, 0, 3);
+		list ($answer, $maru, $batu) = MaruBatuCheckDetail($answer, $maru, $batu, 2, 0, 0, 0, 0, 2);
+		list ($answer, $maru, $batu) = MaruBatuCheckDetail($answer, $maru, $batu, 3, 0, 0, 0, 0, 1);
+		list ($answer, $maru, $batu) = MaruBatuCheckDetail($answer, $maru, $batu, 1, 2, 1, 1, 2, 1);
+		list ($answer, $maru, $batu) = MaruBatuCheckDetail($answer, $maru, $batu, 2, 1, 1, 1, 1, 2);
+		list ($answer, $maru, $batu) = MaruBatuCheckDetail($answer, $maru, $batu, 0, 2, 0, 3, 1, 2);
+
+		return array ($answer, $maru, $batu);
+		break;
+	default:
+		// 何もしない
+		break;
+	}
+}
+
+function MaruBatuCheckDetail($answer, $maru, $batu, $tate_block_1, $yoko_block_1, $tate_block_2, $yoko_block_2, $tate_block_3, $yoko_block_3) {
+	for($i = 0; $i < ITEM; $i++) {
+		$tmp_i = 0;
+		$tmp_j = 0;
+		$tmp_k = 0;
+		$tmp_l = 0;
+		for($j = 0; $j < ITEM; $j++) {
+			if($answer[$tate_block_1][$yoko_block_1][$i][$j] == '○') {
+				$tmp_i = $i;
+				$tmp_j = $j;
+				for($k = 0; $k < ITEM; $k++) {
+					for($l = 0; $l < ITEM; $l++) {
+						if($answer[$tate_block_2][$yoko_block_2][$i][$l] == '×') {
+							$tmp_k = $k;
+							$tmp_l = $l;
+						}
+					}
+				}
+			}
+		}
+		/*
+		if($tmp_i || $tmp_j || $tmp_k || $tmp_l) {
+			echo '<br />';
+			echo 'tmp_i='.$tmp_i.'<br />';
+			echo 'tmp_j='.$tmp_j.'<br />';
+			echo 'tmp_k='.$tmp_k.'<br />';
+			echo 'tmp_l='.$tmp_l.'<br />';
+			echo '<br />';
+		}
+		 */
+		if($answer[$tate_block_3][$yoko_block_3][$tmp_l][$tmp_i] == NULL) {
+			$answer[$tate_block_3][$yoko_block_3][$tmp_l][$tmp_i] = '×';
+			$batu += 1;
+		}
+	}
 	return array ($answer, $maru, $batu);
 }
+
 
 /*
  * ALL×チェック
@@ -175,8 +226,8 @@ function AllBatuCheck($answer, $maru, $batu) {
 								$yoko_count += 1;
 								if($yoko_count == ITEM - 1) {
 									for($n = 0; $n < ITEM; $n++) {
-										if($answer[$i][$j][$k][$m] == NULL) {
-											$answer[$i][$j][$k][$m] = '○';
+										if($answer[$i][$j][$k][$n] == NULL) {
+											$answer[$i][$j][$k][$n] = '○';
 											$maru += 1;
 										}
 									}
